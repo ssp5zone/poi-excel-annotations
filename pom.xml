@@ -1,8 +1,37 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.ssp5zone</groupId>
   <artifactId>poi-excel-annotations</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Apache POI Excel Annotations</name>
   <description>Apache POI Annotation for writing POJO objects to Excel</description>
+  
+  <licenses>
+       <license>
+           <name>The MIT License (MIT)</name>
+           <url>http://opensource.org/licenses/MIT</url>
+           <distribution>repo</distribution>
+       </license>
+   </licenses>
+  
+  <scm>
+  	<url>https://github.com/ssp5zone/poi-excel-annotations.git</url>
+  	<developerConnection>ssp5zone</developerConnection>
+  </scm>
+  
+  <developers>
+       <developer>
+           <name>Saurabh Singh Parihar</name>
+           <email>ssp5zone@gmail.com</email>
+           <organization>OpenSource</organization>
+       </developer>
+   </developers>
+   
+    <issueManagement>
+        <system>github.com</system>
+        <url>https://github.com/ssp5zone/poi-excel-annotations/issues</url>
+    </issueManagement>
+   
 </project>
