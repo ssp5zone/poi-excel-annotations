@@ -1,37 +1,72 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.ssp5zone</groupId>
-  <artifactId>poi-excel-annotations</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>Apache POI Excel Annotations</name>
-  <description>Apache POI Annotation for writing POJO objects to Excel</description>
-  
-  <licenses>
-       <license>
-           <name>The MIT License (MIT)</name>
-           <url>http://opensource.org/licenses/MIT</url>
-           <distribution>repo</distribution>
-       </license>
-   </licenses>
-  
-  <scm>
-  	<url>https://github.com/ssp5zone/poi-excel-annotations.git</url>
-  	<developerConnection>ssp5zone</developerConnection>
-  </scm>
-  
-  <developers>
-       <developer>
-           <name>Saurabh Singh Parihar</name>
-           <email>ssp5zone@gmail.com</email>
-           <organization>OpenSource</organization>
-       </developer>
-   </developers>
-   
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.ssp5zone</groupId>
+    <artifactId>poi-excel-annotations</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Apache POI Excel Annotations</name>
+    <description>Apache POI Annotation for writing POJO objects to Excel</description>
+
+    <properties>
+        <apache.poi.version>4.1.1</apache.poi.version>
+        <junit.version>4.12</junit.version>
+        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <url>http://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/ssp5zone/poi-excel-annotations.git</url>
+        <developerConnection>ssp5zone</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Saurabh Singh Parihar</name>
+            <email>ssp5zone@gmail.com</email>
+            <organization>OpenSource</organization>
+        </developer>
+    </developers>
+
     <issueManagement>
         <system>github.com</system>
         <url>https://github.com/ssp5zone/poi-excel-annotations/issues</url>
     </issueManagement>
-   
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
+        <dependency>
+		    <groupId>commons-lang</groupId>
+		    <artifactId>commons-lang</artifactId>
+		    <version>2.6</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.freemarker</groupId>
+		    <artifactId>freemarker</artifactId>
+		    <version>2.3.29</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>2.0.0-alpha1</version>
+		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
