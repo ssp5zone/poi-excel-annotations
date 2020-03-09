@@ -9,6 +9,8 @@
     <description>Apache POI Annotation for writing POJO objects to Excel</description>
 
     <properties>
+    	<maven.compiler.target>1.8</maven.compiler.target>
+    	<maven.compiler.source>1.8</maven.compiler.source>
         <apache.poi.version>4.1.1</apache.poi.version>
         <junit.version>4.12</junit.version>
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
@@ -68,5 +70,18 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>org.testinfected.hamcrest-matchers</groupId>
+        	<artifactId>all-matchers</artifactId>
+        	<version>1.8</version>
+        	<type>pom</type>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		    <version>2.8.6</version>
+		    <scope>test</scope>
+		</dependency>
     </dependencies>
 </project>
