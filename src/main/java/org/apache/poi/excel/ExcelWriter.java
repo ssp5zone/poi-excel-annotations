@@ -2,6 +2,7 @@ package org.apache.poi.excel;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -21,7 +22,6 @@ import org.apache.poi.excel.annotation.ExcelCell;
 import org.apache.poi.excel.annotation.ExcelSheet;
 import org.apache.poi.excel.model.SheetContainer;
 import org.apache.poi.excel.model.WorkbookContainer;
-import org.apache.poi.excel.utility.FileUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -119,64 +119,10 @@ import freemarker.template.utility.StringUtil;
 public class ExcelWriter {
 	private final static Logger log = LoggerFactory.getLogger(ExcelWriter.class);
 
-	private static String BACKUP_STORAGE_PATH;
-	private static final String TEMP_PATH = "/var/tmp/";
-	private static final int BACKUP_FILE_RETENTION_DAYS = 60;
-
-	private static WorkbookContainer workbookContainer;
-
 	/**
 	 * Initialize the file storage directory
 	 */
-	static {
-		BACKUP_STORAGE_PATH = TEMP_PATH;
-		workbookContainer = new WorkbookContainer();
-	}
-
-	/**
-	 * Use this to set the default path where the excel file would be written as a
-	 * backup/storage. <br>
-	 * <br>
-	 * Alternately, you can also set it by adding
-	 * <b>UNSEC.UTILS.EXCEL.BACKUP.DIR</b> property in your application.
-	 * 
-	 * @param path The physical location where the excel files would be stored.
-	 */
-	public static void setStorage(String path) {
-		BACKUP_STORAGE_PATH = (path == null || path.equals("")) ? TEMP_PATH : path.trim();
-	}
-
-	/**
-	 * Creates an Excel Workbook based on the data. Each list of data passed is
-	 * converted to it's own sheet. NOTE: It is advised to pass a filename, else a
-	 * dummy name would be generated.
-	 * 
-	 * @param data A list of Plain old java objects. Each list passed gets converted
-	 *             to its own sheet.
-	 * @param <T>  The datatype contained by the list.
-	 * @return The generated Excel file.
-	 */
-	@SafeVarargs
-	public static <T> File write(List<? extends T>... data) {
-		String dummyFileName = String.valueOf(System.currentTimeMillis());
-		return ExcelWriter.write(dummyFileName, data);
-	}
-
-	/**
-	 * Creates an Excel Workbook based on the data. Each list of data passed is
-	 * converted to it's own sheet. The generated data is stored as the file name
-	 * provided at a predefined path. The file retention period is 20 days.
-	 * 
-	 * @param fileName The name of the generated file.
-	 * @param data     A list of Plain old java objects. Each list passed gets
-	 *                 converted to its own sheet.
-	 * @param <T>      The datatype contained by the list.
-	 * @return The generated Excel file.
-	 */
-	@SafeVarargs
-	public static <T> File write(String fileName, List<? extends T>... data) {
-		return ExcelWriter.write(fileName, BACKUP_STORAGE_PATH, data);
-	}
+	private static WorkbookContainer workbookContainer;
 
 	/**
 	 * Creates an Excel Workbook based on the data. Each list of data passed is
@@ -191,7 +137,7 @@ public class ExcelWriter {
 	 * @return The generated Excel file.
 	 */
 	@SafeVarargs
-	public synchronized static <T> File write(String fileName, String path, List<? extends T>... data) {
+	public static <T> File write(String path, String fileName, List<? extends T>... data) {
 		List<List<?>> filteredData = Arrays.asList(data).stream().filter(nonEmptyData).collect(Collectors.toList());
 		// If there is no data in any sheet, do not process further
 		if (filteredData.size() > 0) {
@@ -199,7 +145,7 @@ public class ExcelWriter {
 			// at-once.
 			// The context switching happening here is heavy and may cause the whole system
 			// to lag.
-			synchronized (workbookContainer) {
+			synchronized (ExcelWriter.class) {
 				// Reset the workbook
 				ExcelWriter.initWorkBook();
 
@@ -539,30 +485,49 @@ public class ExcelWriter {
 	 * @return The generated file.
 	 */
 	private static File writeToFile(String path, String fileName) {
+		FileOutputStream fos = null;
+		Workbook workbook = null;
 		try {
 			String fullPath = Paths.get(path, fileName).toString();
 			if (fullPath == null || fullPath.equals("")) {
 				return null;
 			}
 			File file = new File(fullPath);
+
+			// Over-ride if the same filename exists.
 			if (file.exists()) {
-				log.info("As " + fullPath + " exists, deleting the file.");
+				log.info("As " + fullPath + " already exists, deleting the existing file.");
 				file.delete();
 			}
+
+			// Add an extension to the file if not provided in the passed name.
 			if (!fullPath.endsWith(".xlsx")) {
 				fullPath = fullPath.concat(".xlsx");
 			}
-			FileOutputStream f = new FileOutputStream(file);
-			Workbook workbook = workbookContainer.getWorkbook();
-			workbook.write(f);
-			workbook.close();
-			f.close();
+			fos = new FileOutputStream(file);
+			workbook = workbookContainer.getWorkbook();
+			workbook.write(fos);
 			return file;
 		} catch (Exception e) {
 			log.error("Write to workbook failed : " + e.getMessage());
 			return null;
 		} finally {
-			cleanupFiles();
+			if (workbook != null) {
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					log.warn("Unable to close the workbook due to: " + e);
+					log.info("The above exception is not fatal. Will try to continue");
+				}
+			}
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					log.warn("Unable to close the file stream due to: " + e);
+					log.info("The above exception is not fatal. Will try to continue");
+				}
+			}
 		}
 	}
 
@@ -579,18 +544,6 @@ public class ExcelWriter {
 		} else {
 			return StringUtil.capitalize(String.join(" ", StringUtils.splitByCharacterTypeCamelCase(camelCaseString)));
 		}
-	}
-
-	/**
-	 * Deletes file from the provided directory, having the mentioned name which are
-	 * older than the passed no of hours.
-	 * 
-	 * @param fromDirectory
-	 * @param havingName
-	 * @param olderThan
-	 */
-	private static void cleanupFiles() {
-		FileUtil.deleteFileOlderThanDays(BACKUP_STORAGE_PATH, BACKUP_FILE_RETENTION_DAYS);
 	}
 
 }
