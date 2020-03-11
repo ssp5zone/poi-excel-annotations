@@ -1,6 +1,6 @@
 # Apache POI Excel Writer & Annotations
 
-A smart Java utility to write **any** `List` of Java Objects to an Excel/CSV file with just one line of code.
+Java utility to write `List` of Java Objects to Excel/CSV file with just one line of code.
 
 ## Usage
 
@@ -9,16 +9,17 @@ A smart Java utility to write **any** `List` of Java Objects to an Excel/CSV fil
 3. Use it as below.
 
 ``` Java
-// Your existing code
-List<Employee> employees = ...;
-List<Department> departments = ...;
-// ... other lists
+/**
+ * List<Employee> employees = ...;
+ * List<Department> departments = ...;
+ * ... other existing code
+ */
 
-// The one line code
+// Add this
 ExcelWriter.write("/path/to/write", "MyFile.xlsx", employees, departments, ...);
 ```
 
-**That's it!** 
+**!!That's it!!** 
 
 This would create an Excel file called _MyFile.xlsx_ with 1st sheet as Employees, next sheet as Departments and so on. 
 
@@ -140,10 +141,10 @@ public class ExcelAnnotated {
 	public LocalDateTime dateTime;
 
 	@ExcelCell(type = ExcelCellType.PERCENT)
-    public float percent;
+    	public float percent;
     
-    public String thisWillNotAppearInExcel;
-    public String thisToo;
+    	public String thisWillNotAppearInExcel;
+    	public String thisToo;
 ```
 
 Now, the only the attributes with `@ExcelCell` annotation would appear in the sheet.
